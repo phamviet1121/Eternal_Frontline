@@ -5,11 +5,15 @@ using UnityEngine;
 
 public class DashSkill : Skill
 {  
+
     public Mover mover;
     public Control_attack control_Attack;
+    public string nameAnim;
     public float dashDistance = 5f; // Khoảng cách lướt
     public float dashDuration = 1f;
-  
+
+    public float dame;
+    public Control_collider_attack control_Collider_Attack;
     public float cooldown = 5f;
 
     public float remainingTime;
@@ -25,7 +29,12 @@ public class DashSkill : Skill
             } 
             control_Attack.isAttacking = true;
             canUse = false;
-            mover.anim.SetBool("attack2",true);
+            mover.anim.SetBool(nameAnim, true);
+            if(control_Collider_Attack!=null )
+            {
+                control_Collider_Attack.dame=dame;
+                control_Collider_Attack.onCollider_Attack();
+            }    
 
 
             StartCoroutine(PerformDash());
@@ -44,6 +53,7 @@ public class DashSkill : Skill
 
         while (elapsed < dashDuration)
         {
+           
             // Lerp vị trí theo thời gian
             transform.position = Vector3.Lerp(startPos, targetPos, elapsed / dashDuration);
             elapsed += Time.deltaTime;
@@ -52,7 +62,11 @@ public class DashSkill : Skill
 
         // Đảm bảo đến đúng vị trí cuối
         transform.position = targetPos;
-        mover.anim.SetBool("attack2", false);
+        mover.anim.SetBool(nameAnim, false);
+        if (control_Collider_Attack != null)
+        {
+            control_Collider_Attack.offCollider_Attack();
+        }
         control_Attack.isAttacking = false;
 
         StartCoroutine(CooldownTimer());

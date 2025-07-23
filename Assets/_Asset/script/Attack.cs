@@ -7,7 +7,7 @@ public class Attack : MonoBehaviour
 {
     public Animator anim;
     public int indexAttack;
-
+    public float dame;
 
 
     private float lastAttackTime = 0f;
@@ -16,16 +16,17 @@ public class Attack : MonoBehaviour
     public float delayatt;
 
     public bool isattack;
-    public bool a;
+  //  public bool a;
 
     public Control_attack control_Attack;
+    public Control_collider_attack control_Collider_Attack;
     // public TagBasedDetector tagBasedDetector;
 
     void Start()
     {
         indexAttack = 0;
         isattack = true;
-        a = false;
+        control_Attack.a = false;
 
     }
 
@@ -81,7 +82,7 @@ public class Attack : MonoBehaviour
     {
         if (isattack && control_Attack.isAllowsAttack&&!control_Attack.isAttacking)
         {
-            a = true;
+            control_Attack.a = true;
             // control_Attack.ismoverAttack=true;
             // Gửi trigger dựa trên indexAttack
             if (indexAttack == 0)
@@ -122,7 +123,7 @@ public class Attack : MonoBehaviour
   //  int b;
     public void annimattack()
     {
-        if (a == true)
+        if (control_Attack.a == true)
         {
            // b++;
           //  Debug.Log(b);
@@ -131,22 +132,28 @@ public class Attack : MonoBehaviour
             if (indexAttack == 0 && control_Attack.isAttacking)
             {
                 anim.SetTrigger("attack1_0");
+                control_Collider_Attack.dame = dame ;
+                //control_Collider_Attack.onCollider_Attack(dame);
                 isattack = false;
 
             }
             else if (indexAttack == 1 && control_Attack.isAttacking)
             {
                 anim.SetTrigger("attack1_1");
+                control_Collider_Attack.dame = dame + dame * 0.2f;
+                //control_Collider_Attack.onCollider_Attack();
                 isattack = false;
 
             }
             else if (indexAttack == 2 && control_Attack.isAttacking)
             {
                 anim.SetTrigger("attack1_2");
+                control_Collider_Attack.dame = dame + dame * 0.5f;
+                // control_Collider_Attack.onCollider_Attack();
                 isattack = false;
 
             }
-            a = false;
+            control_Attack.a = false;
 
         }
 

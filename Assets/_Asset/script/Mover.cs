@@ -150,13 +150,13 @@ public class Mover : MonoBehaviour
 
     public void movertagget(Vector3 moveTarget)
     {
-        float distance = Vector3.Distance(transform.position, moveTarget);
+       // float distance = Vector3.Distance(transform.position, moveTarget);
         //Debug.Log(distance);
-       
+        Vector3 targetPosition = rb.position + moveTarget * speed * Time.fixedDeltaTime;
         if (ismoverattck)
         {
-            rb.MovePosition(moveTarget);
-            anim.SetFloat("mover", moveTarget.magnitude);
+            rb.MovePosition(targetPosition);
+            anim.SetFloat("mover", targetPosition.magnitude);
         }
         else
         {

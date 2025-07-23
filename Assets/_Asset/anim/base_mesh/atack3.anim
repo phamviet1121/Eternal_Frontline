@@ -173682,8 +173682,22 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 2.25
+    functionName: onCollider_Attack
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 4.7916665
     functionName: delay
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 4.875
+    functionName: offCollider_Attack
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

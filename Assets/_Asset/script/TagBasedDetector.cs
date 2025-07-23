@@ -1,19 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TagBasedDetector : MonoBehaviour
 {
     public float detectRadius = 5f;
-    public float rotateRadius = 2f;
+   // public float rotateRadius = 2f;
     private GameObject targetMonster;
 
     public float stopDistance = 2f;      // Dừng lại ở khoảng này
-    public float moveSpeed = 3f;         // Tốc độ di chuyển
+   // public float moveSpeed = 3f;         // Tốc độ di chuyển
     public float rotateSpeed = 5f;
     public Control_attack control_Attack;
     public Mover mover;
-    public Attack attack;
+    //public Attack attack;
+
+    public UnityEvent eventAttack;
+    public GameObject closestMonster;
 
     void OnDrawGizmosSelected()
     {
@@ -23,7 +27,7 @@ public class TagBasedDetector : MonoBehaviour
 
         // Màu đỏ cho vùng quay mặt (2f)
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, rotateRadius);
+        Gizmos.DrawWireSphere(transform.position, stopDistance);
     }
 
     void Start()
@@ -42,7 +46,7 @@ public class TagBasedDetector : MonoBehaviour
         Collider[] colliders = Physics.OverlapSphere(transform.position, detectRadius);
 
         float closestDistance = Mathf.Infinity;
-        GameObject closestMonster = null;
+        /*GameObject*/ closestMonster = null;
 
 
         foreach (Collider col in colliders)
@@ -78,7 +82,7 @@ public class TagBasedDetector : MonoBehaviour
             Vector3 direction = (targetMonster.transform.position - transform.position).normalized;
             Vector3 flatDirection = new Vector3(direction.x, 0, direction.z);
 
-            if (control_Attack.isAttacking && attack.a)
+            if (control_Attack.isAttacking && control_Attack.a)
             {
                 if (flatDirection.magnitude > 0.01f)
                 {
@@ -89,16 +93,19 @@ public class TagBasedDetector : MonoBehaviour
                 if (distanceToTarget > stopDistance)
                 {
                     mover.ismoverattck = true;
-                    Vector3 moveTarget = transform.position + flatDirection * moveSpeed * Time.deltaTime;
-                    mover.movertagget(moveTarget);
+                  //  Vector3 moveTarget = transform.position + flatDirection * moveSpeed * Time.deltaTime;
+                    mover.movertagget(flatDirection);
 
                     //transform.position += flatDirection * moveSpeed * Time.deltaTime;
                 }
                 else
                 {
+                    Quaternion lookRotation = Quaternion.LookRotation(flatDirection);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 100f);
                     mover.ismoverattck = false;
-                    attack.annimattack();
+                    // attack.annimattack();
                     //anim.SetTrigger(name);
+                    eventAttack.Invoke();
                 }
             }
 
@@ -109,13 +116,109 @@ public class TagBasedDetector : MonoBehaviour
         {
             targetMonster = null;
             control_Attack.attack_target = false;
-            attack.annimattack();
+            //attack.annimattack();
+            eventAttack.Invoke();
+
         }
 
 
 
 
     }
+
+
+
+
+
+    public void DetectAndRotateEvent(UnityEvent event_attack)
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, detectRadius);
+
+        float closestDistance = Mathf.Infinity;
+        /*GameObject*/ closestMonster = null;
+
+
+        foreach (Collider col in colliders)
+        {
+            if (col.CompareTag("Monster"))
+            {
+                float distance = Vector3.Distance(transform.position, col.transform.position);
+
+                // Bắt con gần nhất trong bán kính 5f
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestMonster = col.gameObject;
+                }
+
+                //// Nếu có con gần trong 2f thì quay mặt về hướng đó
+                //if (distance <= rotateRadius)
+                //{
+                //    Vector3 direction = (col.transform.position - transform.position).normalized;
+                //    Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+                //    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+                //}
+            }
+
+
+        }
+        if (closestMonster != null)
+        {
+            control_Attack.attack_target = true;
+            targetMonster = closestMonster;
+            //  Debug.Log("Đã bắt con gần nhất: " + targetMonster.name);
+
+            Vector3 direction = (targetMonster.transform.position - transform.position).normalized;
+            Vector3 flatDirection = new Vector3(direction.x, 0, direction.z);
+
+            if (control_Attack.isAttacking )
+            {
+                if (flatDirection.magnitude > 0.01f)
+                {
+                    Quaternion lookRotation = Quaternion.LookRotation(flatDirection);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotateSpeed);
+                }
+                float distanceToTarget = Vector3.Distance(transform.position, targetMonster.transform.position);
+                if (distanceToTarget > stopDistance)
+                {
+                    mover.ismoverattck = true;
+                    //  Vector3 moveTarget = transform.position + flatDirection * moveSpeed * Time.deltaTime;
+                    mover.movertagget(flatDirection);
+
+                    //transform.position += flatDirection * moveSpeed * Time.deltaTime;
+                }
+                else
+                {
+                    Quaternion lookRotation = Quaternion.LookRotation(flatDirection);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 100f);
+                    mover.ismoverattck = false;
+                    // attack.annimattack();
+                    //anim.SetTrigger(name);
+                    event_attack.Invoke();
+                }
+            }
+
+
+
+        }
+        else
+        {
+            targetMonster = null;
+            control_Attack.attack_target = false;
+            //attack.annimattack();
+            event_attack.Invoke();
+
+        }
+
+
+
+
+    }
+
+
+
+
+
 
 
 

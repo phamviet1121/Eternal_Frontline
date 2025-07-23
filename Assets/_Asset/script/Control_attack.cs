@@ -9,6 +9,7 @@ public class Control_attack : MonoBehaviour
     public bool isAttacking;
     public bool isAllowsAttack;
     public bool attack_target;
+    public bool a;
    // public bool ismoverAttack;
 
 

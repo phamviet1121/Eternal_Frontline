@@ -31,7 +31,7 @@ public class BuffSkill : Skill
                 return;
             }
             control_Attack.isAttacking = true;
-
+            control_Attack.isMover = false;
             // originalSpeed = mover.speed;
             mover.speed += addspeed;
             mover.anim.SetFloat("addspeed", addspeedAnim);

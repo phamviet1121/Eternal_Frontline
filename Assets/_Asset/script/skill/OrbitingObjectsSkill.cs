@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class OrbitingObjectsSkill : Skill
 {
+
     public Mover mover;
     public Control_attack control_Attack;
 
@@ -13,7 +14,7 @@ public class OrbitingObjectsSkill : Skill
     public float rotateSpeed = 90f;      // Tốc độ xoay quanh (độ/giây)
     public int numberOfObjects = 3;      // Số lượng vật thể
     public float duration = 5f;          // thời gian tồn tại 
-
+    public float dame;
 
     private List<GameObject> orbitingObjects = new List<GameObject>();
 
@@ -53,6 +54,11 @@ public class OrbitingObjectsSkill : Skill
             Vector3 spawnPos = playerTransform.position + offset;
 
             GameObject go = Instantiate(orbitingPrefab, spawnPos, Quaternion.identity);
+            Collider_obj collider_Obj = go.GetComponent<Collider_obj>();
+            if(collider_Obj != null)
+            {
+                collider_Obj.dame = dame;
+            }    
            // go.transform.parent = this.transform; // Gắn vào player để xoay quanh
             orbitingObjects.Add(go);
         }
